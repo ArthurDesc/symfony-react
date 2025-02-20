@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
+import { login } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
-interface LoginFormProps {
-    onLogin: (username: string, password: string) => void;
-}
+export const Login: React.FC = () => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const navigate = useNavigate();
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        onLogin(username, password);
+        setError('');
+
+        try {
+            await login(email, password);
+            navigate('/dashboard');
+        } catch (err) {
+            setError('Email ou mot de passe incorrect');
+        }
     };
 
     return (
@@ -18,30 +25,31 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Connexion à votre compte
+                        Connexion
                     </h2>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="rounded-md bg-red-50 p-4">
+                            <div className="text-sm text-red-700">{error}</div>
+                        </div>
+                    )}
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div>
-                            <label htmlFor="username" className="sr-only">
-                                Nom d'utilisateur
-                            </label>
+                            <label htmlFor="email" className="sr-only">Email</label>
                             <input
-                                id="username"
-                                name="username"
-                                type="text"
+                                id="email"
+                                name="email"
+                                type="email"
                                 required
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Nom d'utilisateur"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="sr-only">
-                                Mot de passe
-                            </label>
+                            <label htmlFor="password" className="sr-only">Mot de passe</label>
                             <input
                                 id="password"
                                 name="password"
@@ -67,6 +75,4 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             </div>
         </div>
     );
-};
-
-export default LoginForm; 
+}; 

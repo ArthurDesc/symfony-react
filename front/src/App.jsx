@@ -2,21 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from './components/Login';
 import { PrivateRoute } from './components/PrivateRoute';
-import { getCurrentUser, logout } from './services/authService';
-import { UserResponse } from './services/authService';
-import './App.css';
+import { authService } from './services/authService';
 
-const Dashboard: React.FC = () => {
-    const [user, setUser] = useState<UserResponse | null>(null);
+const Dashboard = () => {
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         const loadUser = async () => {
             try {
-                const userData = await getCurrentUser();
+                const userData = await authService.getCurrentUser();
                 setUser(userData);
             } catch (error) {
                 console.error('Error loading user:', error);
-                logout();
+                authService.logout();
                 window.location.href = '/login';
             }
         };
@@ -25,7 +23,7 @@ const Dashboard: React.FC = () => {
     }, []);
 
     const handleLogout = () => {
-        logout();
+        authService.logout();
         window.location.href = '/login';
     };
 
@@ -50,7 +48,7 @@ const Dashboard: React.FC = () => {
                 <div className="mt-4">
                     <h2 className="text-lg font-semibold">Vos rôles :</h2>
                     <ul className="list-disc list-inside">
-                        {user.roles.map((role: string, index: number) => (
+                        {user.roles.map((role, index) => (
                             <li key={index}>{role}</li>
                         ))}
                     </ul>
@@ -60,7 +58,7 @@ const Dashboard: React.FC = () => {
     );
 };
 
-const App: React.FC = () => {
+function App() {
     return (
         <Router>
             <Routes>
@@ -77,6 +75,6 @@ const App: React.FC = () => {
             </Routes>
         </Router>
     );
-};
+}
 
-export default App;
+export default App; 
