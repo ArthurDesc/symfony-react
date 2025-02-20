@@ -17,11 +17,14 @@ services:
 
   php:
     build:
-      context: ./docker/php
-      dockerfile: Dockerfile
+      context: ./back
+      dockerfile: ../docker/php/Dockerfile
     container_name: php-symfony
     volumes:
-      - ./back:/var/www/symfony
+      - ./back:/var/www/symfony:cached
+      - ./back/var/cache:/var/www/symfony/var/cache:delegated
+      - ./back/var/log:/var/www/symfony/var/log:delegated
+      - vendor:/var/www/symfony/vendor
     depends_on:
       - database
     networks:
@@ -78,4 +81,5 @@ networks:
     driver: bridge
 
 volumes:
-  db-data: 
+  db-data:
+  vendor: 

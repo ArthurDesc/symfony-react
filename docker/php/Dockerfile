@@ -38,7 +38,26 @@ RUN echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
     && echo "apc.enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini \
     && echo "apc.shm_size=256M" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
 
+# Set working directory
 WORKDIR /var/www/symfony
+
+# Create directory for vendor
+RUN mkdir -p /var/www/symfony
+
+# Copy composer files
+COPY composer.* ./
+
+# Install dependencies
+RUN composer install --prefer-dist --no-dev --optimize-autoloader --no-scripts
+
+# Copy the rest of the application
+COPY . .
+
+# Generate optimized autoloader
+RUN composer dump-autoload --optimize --no-dev
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/symfony
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
