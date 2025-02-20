@@ -170,6 +170,26 @@ Pour toute question ou problème :
 
 L'application utilise JWT (JSON Web Tokens) pour l'authentification. Voici les endpoints disponibles :
 
+### Configuration initiale des clés JWT
+
+Avant de pouvoir utiliser l'authentification JWT, vous devez générer les clés :
+
+```bash
+# Créer le dossier pour les clés
+mkdir -p config/jwt
+
+# Générer la clé privée
+openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -pass pass:your_secret_passphrase
+
+# Générer la clé publique
+openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:your_secret_passphrase
+```
+
+Assurez-vous de :
+1. Remplacer `your_secret_passphrase` par une passphrase sécurisée
+2. Configurer la même passphrase dans votre fichier `.env.local`
+3. Ne jamais commiter les clés JWT dans Git
+
 ### Endpoints d'authentification
 
 - **Login** : `POST /api/login_check`
@@ -208,3 +228,11 @@ Authorization: Bearer {your_jwt_token}
 ```
 
 Le token a une durée de validité de 1 heure. Après expiration, vous devrez vous reconnecter.
+
+### Sécurité
+
+- Les clés JWT sont stockées dans `config/jwt/`
+- Les fichiers `.pem` sont ignorés par Git
+- La passphrase est stockée dans les variables d'environnement
+- Chaque environnement (dev, staging, prod) doit avoir ses propres clés
+- Les tokens expirent après 1 heure
