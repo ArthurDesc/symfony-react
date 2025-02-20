@@ -165,3 +165,46 @@ Pour travailler efficacement sur le projet :
 Pour toute question ou problème :
 1. Consultez la documentation officielle de [Symfony](https://symfony.com/doc) ou [React](https://reactjs.org/docs)
 2. Ouvrez une issue sur le dépôt GitHub du projet
+
+## Authentification JWT
+
+L'application utilise JWT (JSON Web Tokens) pour l'authentification. Voici les endpoints disponibles :
+
+### Endpoints d'authentification
+
+- **Login** : `POST /api/login_check`
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "your_password"
+  }
+  ```
+  Réponse :
+  ```json
+  {
+    "token": "eyJ0eXAiOiJKV1QiLC..."
+  }
+  ```
+
+- **Register** : `POST /api/register`
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "your_password"
+  }
+  ```
+
+- **Get User Info** : `GET /api/me`
+  Headers requis :
+  ```
+  Authorization: Bearer {your_jwt_token}
+  ```
+
+### Utilisation des tokens JWT
+
+Pour accéder aux routes protégées, incluez le token JWT dans le header Authorization :
+```
+Authorization: Bearer {your_jwt_token}
+```
+
+Le token a une durée de validité de 1 heure. Après expiration, vous devrez vous reconnecter.
