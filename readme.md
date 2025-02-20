@@ -51,6 +51,9 @@ symfony-react-app/
    ```
    docker exec -it php composer install
    ```
+   > **Note importante**: Les dépendances Symfony (dossier vendor) sont installées directement dans le conteneur Docker PHP. 
+   > Le dossier vendor n'est pas synchronisé avec votre machine locale pour des raisons de performance.
+   > Si vous avez besoin d'accéder aux dépendances, utilisez `docker exec -it php bash` pour entrer dans le conteneur.
 
 5. **Création et migration de la base de données**
    ```
@@ -135,6 +138,19 @@ Vérifiez que :
 1. Le service MySQL est bien démarré
 2. Les informations de connexion dans le `.env` sont correctes
 3. La base de données existe
+
+### Problèmes avec les dépendances Composer
+Si vous rencontrez des problèmes avec les dépendances :
+```bash
+# Nettoyer le cache Composer dans le conteneur
+docker exec -it php composer clear-cache
+
+# Réinstaller toutes les dépendances
+docker exec -it php composer install --no-cache
+
+# Vérifier les dépendances installées
+docker exec -it php composer show
+```
 
 ## Développement
 
